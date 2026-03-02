@@ -1,28 +1,32 @@
 name: Build Rubeus
 
-on: [push, pull_request, workflow_dispatch] # 允许手动和自动触发
+on: 
+  workflow_dispatch: # 允许你手动点击按钮触发编译
 
 jobs:
   build:
-    runs-on: windows-latest # 必须用 Windows 环境编译 .NET 程序
+    runs-on: windows-2019 # 使用更稳定的旧版 Windows 环境以支持旧版 .NET
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1
+      uses: microsoft/setup-msbuild@v1.1
 
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1
 
-    - name: Restore Packages
+    - name: Restore NuGet Packages
       run: nuget restore Rubeus.sln
 
-    - name: Build Solution
-      run: msbuild Rubeus.sln /p:Configuration=Release
+    - name: Build Rubeus
+      run: msbuild Rubeus.sln /p:Configuration=Release /p:Platform="Any CPU"
 
-    - name: Upload Artifact
+    - name: Upload Finished EXE
       uses: actions/upload-artifact@v3
       with:
-        name: Rubeus-Exe
-        path: Rubeus/bin/Release/
+        name: Rubeus-Binary
+        # 这里的路径必须匹配编译出的位置，Rubeus 默认通常在这里：
+        path: |
+          Rubeus/bin/Release/Rubeus.exe
