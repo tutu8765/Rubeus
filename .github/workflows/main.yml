@@ -1,11 +1,12 @@
-name: Build Rubeus
+name: Build Rubeus (.NET 3.5)
 
 on: 
-  workflow_dispatch: # 允许你手动点击按钮触发编译
+  workflow_dispatch: 
 
 jobs:
   build:
-    runs-on: windows-2019 # 使用更稳定的旧版 Windows 环境以支持旧版 .NET
+    # 必须使用 windows-2019，因为它对旧版 .NET 框架支持更好
+    runs-on: windows-2019 
 
     steps:
     - name: Checkout Code
@@ -20,13 +21,13 @@ jobs:
     - name: Restore NuGet Packages
       run: nuget restore Rubeus.sln
 
-    - name: Build Rubeus
-      run: msbuild Rubeus.sln /p:Configuration=Release /p:Platform="Any CPU"
+    - name: Build Rubeus (Targeting .NET 3.5)
+      # 这里通过参数强制指定框架版本为 v3.5
+      run: msbuild Rubeus.sln /p:Configuration=Release /p:Platform="Any CPU" /p:TargetFrameworkVersion=v3.5
 
     - name: Upload Finished EXE
       uses: actions/upload-artifact@v3
       with:
-        name: Rubeus-Binary
-        # 这里的路径必须匹配编译出的位置，Rubeus 默认通常在这里：
+        name: Rubeus-v3.5-Binary
         path: |
           Rubeus/bin/Release/Rubeus.exe
