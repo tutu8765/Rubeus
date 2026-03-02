@@ -1,7 +1,8 @@
 name: Build Rubeus (.NET 3.5)
 
 on: 
-  workflow_dispatch: 
+  push:
+  workflow_dispatch:
 
 jobs:
   build:
