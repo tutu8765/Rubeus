@@ -1,0 +1,28 @@
+name: Build Rubeus
+
+on: [push, pull_request, workflow_dispatch] # 允许手动和自动触发
+
+jobs:
+  build:
+    runs-on: windows-latest # 必须用 Windows 环境编译 .NET 程序
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1
+
+    - name: Restore Packages
+      run: nuget restore Rubeus.sln
+
+    - name: Build Solution
+      run: msbuild Rubeus.sln /p:Configuration=Release
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Rubeus-Exe
+        path: Rubeus/bin/Release/
